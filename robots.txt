@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://ams-crafters-redesign.vercel.app/sitemap.xml
