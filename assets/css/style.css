@@ -145,10 +145,19 @@ h3 { font-size: 22px; }
 .statue-img {
   position: relative; width: min(460px, 100%); border-radius: 24px;
   animation: floaty 6s ease-in-out infinite;
-  /* Bottom-edge fade: the statue melts into the section below it */
-  -webkit-mask-image: linear-gradient(to bottom, black 72%, transparent 98%);
-  mask-image: linear-gradient(to bottom, black 72%, transparent 98%);
+  /* Edge fades: the statue melts into the section below it AND dissolves
+     at the left/right sides, so no image edge can ever read as a rectangle */
+  -webkit-mask-image: linear-gradient(to bottom, black 72%, transparent 98%), linear-gradient(to right, transparent 0, black 14%, black 86%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 72%, transparent 98%), linear-gradient(to right, transparent 0, black 14%, black 86%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
   filter: drop-shadow(0 24px 48px rgba(46, 124, 246, 0.35));
+}
+/* 404 statue is displayed small (340px) so its side fades are wider:
+   the glow halo dissolves fully before the image edge */
+.error-page .statue-img {
+  -webkit-mask-image: linear-gradient(to bottom, black 72%, transparent 98%), linear-gradient(to right, transparent 0, black 28%, black 72%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 72%, transparent 98%), linear-gradient(to right, transparent 0, black 28%, black 72%, transparent 100%);
 }
 @keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
 .statue-placeholder {
