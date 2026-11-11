@@ -1,4 +1,4 @@
-# AMS Crafters — Concept Redesign (Demo)
+# AMS Crafters - Concept Redesign (Demo)
 
 A complete static redesign of https://www.amscrafters.com/, built as a front-end
 demo to show what the site could be. Dark premium theme, classical Greek statue
@@ -27,10 +27,10 @@ artwork, scroll animations, and every verified audit flaw fixed.
 - `packages.html`, `story.html`, `team.html`, `careers.html`
 - `contact.html`, `consultation.html`, `privacy.html`, `terms.html`, `404.html`
 - `assets/css/style.css`, `assets/js/main.js`, `assets/fonts/*.woff2` (local)
-- `assets/img/statue-hero.png` (blue-tinted statue, sunglasses, tablet — hero),
-  `statue-purple.png` (purple statue, sunglasses, cash — results/pricing),
-  `statue-red.png` (red sunglasses, phone — contact/CTA and 404),
-  `statue-green.png` (statue thinking at a laptop, green rim light — story/about).
+- `assets/img/statue-hero.png` (blue-tinted statue, sunglasses, tablet, hero),
+  `statue-purple.png` (purple statue, sunglasses, cash, results/pricing),
+  `statue-red.png` (red sunglasses, phone, contact/CTA and 404),
+  `statue-green.png` (statue thinking at a laptop, green rim light, story/about).
   These are new AI-generated images supplied separately; the HTML keeps the
   `<img>` references and a gradient placeholder shows if a file is missing.
   Statue images fade out at the bottom edge (CSS mask-image) with a soft glow
@@ -52,7 +52,7 @@ vercel --prod
 ```
 
 Then update the domain in `sitemap.xml` and `robots.txt` if it differs from
-`ams-crafters-redesign.vercel.app`.
+`ams-crafters-redesign-vercel.vercel.app`.
 
 ## Notes
 
@@ -61,4 +61,4 @@ Then update the domain in `sitemap.xml` and `robots.txt` if it differs from
 - Package feature lists are placeholder copy for the agency to confirm.
 - Testimonials use the verified quotes and names from the audit.
 - Concept redesign crafted by Faizan Khan, Web Developer and AI Automation
-  Specialist — https://faizankhan.pages.dev/
+  Specialist, https://faizankhan.pages.dev/

@@ -7,7 +7,7 @@ import os
 from html import escape as esc
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-DOMAIN = "https://ams-crafters-redesign.vercel.app"
+DOMAIN = "https://ams-crafters-redesign-vercel.vercel.app"
 SITE_NAME = "AMS Crafters"
 
 # ---------------------------------------------------------------- data
@@ -134,7 +134,7 @@ PACKAGES = [
     ("ecommerce", "Ecommerce", False, [
         ("Startup", "$999", "", ["Up to 20 products", "Payment setup", "Mobile responsive store", "Basic SEO", "1 revision round"], False),
         ("Professional", "$1,799", "", ["Up to 100 products", "Custom theme design", "Payment and shipping setup", "Discount codes", "2 revision rounds"], True),
-        ("Elite", "$3,694", "", ["Up to 500 products", "Custom development", "Customer log-in area", "Signage and label design", "Stationery design", "3 revision rounds"], False),
+        ("Elite", "$3,694", "", ["Up to 500 products", "Custom development", "Customer log-in area", "Product reviews and ratings", "Email marketing setup", "3 revision rounds"], False),
         ("Silver", "$6,999", "", ["Up to 1,000 products", "Marketplace integration", "Advanced filters", "Abandoned cart recovery", "Priority support"], False),
         ("Business", "$9,999", "", ["Unlimited products", "Headless ready", "Custom checkout", "Multi-currency", "Dedicated manager"], False),
         ("Enterprise", "$15,000", "", ["Everything in Business", "Custom integrations", "Dedicated infrastructure", "12 months support", "Dedicated manager"], False),
@@ -148,11 +148,11 @@ PACKAGES = [
     ]),
     ("video", "Video Animation", False, [
         ("Startup Video", "$499", "", ["Up to 30 seconds", "Script support", "Voiceover included", "1 revision round"], False),
-        ("Delux Video", "$899", "", ["Up to 60 seconds", "Custom storyboard", "Professional voiceover", "Background music", "2 revision rounds"], True),
+        ("Deluxe Video", "$899", "", ["Up to 60 seconds", "Custom storyboard", "Professional voiceover", "Background music", "2 revision rounds"], True),
         ("Premium Video", "$1,199", "", ["Up to 90 seconds", "2D animation", "Sound design", "3 revision rounds"], False),
         ("Unlimited Video", "$1,399", "", ["Up to 2 minutes", "2D and motion graphics", "Sound design", "Revisions included in scope"], False),
         ("Business Video", "$1,799", "", ["Up to 3 minutes", "Full production", "Multiple formats", "Priority delivery"], False),
-        ("Advance Video", "$2,199", "", ["Up to 5 minutes", "Full production team", "All formats", "12 months usage support"], False),
+        ("Advanced Video", "$2,199", "", ["Up to 5 minutes", "Full production team", "All formats", "12 months usage support"], False),
     ]),
     ("seo", "SEO", True, [
         ("Startup", "$449", "/mo", ["10 keywords", "On-page optimization", "Content duplicacy check", "Monthly report"], False),
@@ -169,8 +169,8 @@ PACKAGES = [
         ("Startup Combo", "$449", "", ["Logo design", "Business card and stationery", "Social media setup"], False),
         ("Professional Combo", "$999", "", ["Logo and branding", "Website up to 5 pages", "Social media setup", "Stationery design"], True),
         ("Business Combo", "$1,399", "", ["Logo and branding", "Website up to 10 pages", "Social media management", "Stationery design"], False),
-        ("Advance Combo", "$1,999", "", ["Complete branding", "Ecommerce store", "SEO starter", "Social media management"], False),
-        ("Enterprise Combo", "$2,999", "", ["Everything in Advance", "Custom development", "SEO and SMM", "Dedicated manager"], False),
+        ("Advanced Combo", "$1,999", "", ["Complete branding", "Ecommerce store", "SEO starter", "Social media management"], False),
+        ("Enterprise Combo", "$2,999", "", ["Everything in Advanced Combo", "Custom development", "SEO and SMM", "Dedicated manager"], False),
     ]),
 ]
 
@@ -221,7 +221,7 @@ def header(active):
         '<span class="logo-text">AMS <b>CRAFTERS</b></span></a>' % LOGO_SVG +
         '<button class="nav-toggle" type="button" aria-label="Toggle menu" aria-expanded="false">☰</button>'
         '<nav class="main-nav" aria-label="Main navigation"><ul>%s</ul></nav>' % "".join(items) +
-        '<a class="btn btn-primary btn-sm nav-cta" href="/consultation.html">Get Consultation</a>'
+        '<a class="btn btn-primary btn-sm nav-cta' + (' active' if active == "Consultation" else '') + '" href="/consultation.html">Get Consultation</a>'
         '</div></header>')
 
 def footer():
@@ -260,7 +260,12 @@ def footer():
         '<a href="https://faizankhan.pages.dev/" target="_blank" rel="noopener">faizankhan.pages.dev</a></span>'
         '</div></div></footer>')
 
-def page(title, desc, body, active, url_path):
+def page(title, desc, body, active, url_path, preload_statue=None):
+    head_extra = ""
+    if preload_statue:
+        head_extra = ('<link rel="preload" as="image" href="/assets/img/statue-%s.png" fetchpriority="high">\n'
+                      % preload_statue)
+    head_extra += '<noscript><style>.reveal{opacity:1 !important;transform:none !important}</style></noscript>\n'
     return ("<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n"
             "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
             "<title>%s</title>\n<meta name=\"description\" content=\"%s\">\n"
@@ -271,9 +276,9 @@ def page(title, desc, body, active, url_path):
             "<meta property=\"og:site_name\" content=\"AMS Crafters\">\n"
             "<link rel=\"icon\" href=\"%s\">\n"
             "<link rel=\"stylesheet\" href=\"/assets/css/style.css\">\n"
-            "</head>\n<body>\n%s\n<main>\n%s\n</main>\n%s\n"
+            "%s</head>\n<body>\n%s\n<main>\n%s\n</main>\n%s\n"
             "<script src=\"/assets/js/main.js\"></script>\n</body>\n</html>\n"
-            % (esc(title), esc(desc), esc(title), esc(desc), DOMAIN, url_path, FAVICON,
+            % (esc(title), esc(desc), esc(title), esc(desc), DOMAIN, url_path, FAVICON, head_extra,
                header(active), body, footer()))
 
 def stats_band():
@@ -316,15 +321,121 @@ def cta_band(statue=None):
             '<a class="btn btn-ghost" href="/portfolio.html">View Portfolio</a></div></div>'
             + statue_html + '</div></div></div></section>')
 
-def process_section():
-    steps = [("01", "Discover", "Deep-dive discovery",
-              "We research your brand, goals, audience, and competitors to build a bulletproof strategy foundation."),
-             ("02", "Design", "Pixel-perfect design",
-              "Our designers craft visuals that align with your brand identity and conversion goals."),
-             ("03", "Build", "Clean, scalable code",
-              "Developers bring every design to life with fast, maintainable code and seamless integrations."),
-             ("04", "Launch", "Ship & monitor",
-              "We deploy, test, and watch closely, ensuring everything performs flawlessly from day one.")]
+# Tailored 4-step process per service, derived from each service's own deliverables.
+# No prices, metrics, or results invented; generic steps are the fallback.
+PROCESS_STEPS = {
+    "360-marketing": [
+        ("01", "Audit", "Map every channel",
+         "We audit your current marketing across every channel to find what works, what wastes budget, and where the gaps are."),
+        ("02", "Strategy", "One integrated plan",
+         "We build a single full-funnel strategy that connects search, social, email, and outreach around one goal."),
+        ("03", "Launch", "Campaigns across channels",
+         "We launch coordinated campaigns with consistent messaging and creative on every channel."),
+        ("04", "Optimize", "Measure and improve",
+         "We track analytics and conversion data, then shift budget to whatever is performing best.")],
+    "website-design": [
+        ("01", "Research", "UX strategy first",
+         "We research your audience and goals to map the structure and user journey before any design starts."),
+        ("02", "Design", "UI and brand systems",
+         "We design every screen in your brand system, desktop and mobile, with conversion in mind."),
+        ("03", "Build", "Responsive development",
+         "We build the site with clean code, a CMS and ecommerce where needed, and SEO foundations baked in."),
+        ("04", "Launch", "Test and support",
+         "We test on real devices, launch, and stay on hand for support and improvements.")],
+    "mobile-app": [
+        ("01", "Plan", "Scope and platform",
+         "We define the features, choose native or cross-platform, and map the user journey."),
+        ("02", "Design", "App UI and UX",
+         "We design the interface for thumbs, small screens, and fast everyday use."),
+        ("03", "Build", "API and backend",
+         "We build the app with its API and backend, then test on real devices."),
+        ("04", "Launch", "Store and maintain",
+         "We handle app store submission and keep the app updated after launch.")],
+    "software-development": [
+        ("01", "Discover", "Requirements and architecture",
+         "We map your workflows and requirements into a clear system architecture."),
+        ("02", "Design", "Platform and dashboards",
+         "We design the platform, data model, and dashboards around how your team actually works."),
+        ("03", "Build", "SaaS and integrations",
+         "We build the platform with APIs and integrations, in the cloud, with room to scale."),
+        ("04", "Launch", "Deploy and support",
+         "We deploy with DevOps in place, train your team, and provide enterprise support.")],
+    "seo": [
+        ("01", "Audit", "Technical SEO audit",
+         "We audit the site for technical issues, speed, and indexing problems that hold rankings back."),
+        ("02", "Strategy", "Keywords and content plan",
+         "We pick the keywords worth winning and plan content and links around them."),
+        ("03", "Optimize", "On-page and local SEO",
+         "We fix on-page issues, build local visibility, and publish content that earns links."),
+        ("04", "Report", "Track and refine",
+         "We report rankings and traffic and keep refining what works.")],
+    "branding": [
+        ("01", "Strategy", "Brand strategy",
+         "We define positioning, audience, and the message your brand should own."),
+        ("02", "Identity", "Logo and identity systems",
+         "We design the logo and identity system, with guidelines that keep it consistent everywhere."),
+        ("03", "Launch", "Naming and visual direction",
+         "We roll the brand out across naming, messaging, and visual direction."),
+        ("04", "Grow", "Brand launch support",
+         "We support the launch and help the brand stay consistent as it grows.")],
+    "graphic-design": [
+        ("01", "Brief", "Understand the goal",
+         "We start with the message, audience, and format the design needs to work in."),
+        ("02", "Design", "Concepts and layout",
+         "We design concepts across marketing, print, and social, built around your brand."),
+        ("03", "Refine", "Illustration and polish",
+         "We refine illustration, infographics, and ad creatives until they stop the scroll."),
+        ("04", "Deliver", "Templates and files",
+         "We deliver finished files and brand templates your team can reuse.")],
+    "product-photography": [
+        ("01", "Plan", "Shot list and styling",
+         "We plan the shot list, styling, and setup for studio, lifestyle, and flat-lay shots."),
+        ("02", "Shoot", "Studio and lifestyle",
+         "We shoot the products with lighting and direction that shows every detail."),
+        ("03", "Edit", "Retouching and 360 views",
+         "We retouch every image and prepare 360 and detail shots where needed."),
+        ("04", "Deliver", "Ecommerce-ready files",
+         "We deliver ecommerce-ready files sized and named for your store.")],
+    "crm-solutions": [
+        ("01", "Map", "Sales process audit",
+         "We map how leads and deals move through your business today."),
+        ("02", "Setup", "CRM strategy and setup",
+         "We set up the CRM around your pipeline, with lead management built in."),
+        ("03", "Automate", "Workflows and email",
+         "We automate follow-ups, emails, and reporting so nothing slips through."),
+        ("04", "Train", "Team training and support",
+         "We train your team and keep dashboards and reports running.")],
+    "shopify": [
+        ("01", "Plan", "Store setup and theme",
+         "We plan the store structure and design the theme around your products and brand."),
+        ("02", "Build", "Custom development",
+         "We build custom sections, apps, and integrations your store needs."),
+        ("03", "Optimize", "Payments, shipping, CRO",
+         "We set up payments and shipping, then optimize speed and conversion."),
+        ("04", "Support", "Ongoing growth",
+         "We support the store after launch and keep improving it as you grow.")],
+    "ecommerce": [
+        ("01", "Architect", "Storefront architecture",
+         "We design the storefront architecture, headless or classic, around your catalog and traffic."),
+        ("02", "Build", "Checkout and payments",
+         "We build checkout, payments, and product management that stay out of the customer's way."),
+        ("03", "Connect", "Marketplaces and tools",
+         "We connect marketplaces and the tools your team already uses."),
+        ("04", "Scale", "Performance and CRO",
+         "We tune performance and conversion so the store scales with demand.")],
+}
+
+def process_section(service_slug=None):
+    steps = PROCESS_STEPS.get(service_slug) if service_slug else None
+    if not steps:
+        steps = [("01", "Discover", "Deep-dive discovery",
+                  "We research your brand, goals, audience, and competitors to build a bulletproof strategy foundation."),
+                 ("02", "Design", "Pixel-perfect design",
+                  "Our designers craft visuals that align with your brand identity and conversion goals."),
+                 ("03", "Build", "Clean, scalable code",
+                  "Developers bring every design to life with fast, maintainable code and seamless integrations."),
+                 ("04", "Launch", "Ship & monitor",
+                  "We deploy, test, and watch closely, ensuring everything performs flawlessly from day one.")]
     cards = "".join(
         '<div class="card step reveal"><div class="step-num">%s</div><h3>%s</h3>'
         '<p><strong style="color:var(--text)">%s.</strong> %s</p></div>' % (n, t, s, d)
@@ -435,7 +546,7 @@ def home_page():
     body = hero + marquee_html + about + process_section() + services + trusted + portfolio + testimonials + teaser + workwith + faq_section() + cta_band("red")
     return page("AMS Crafters | Top Digital Agency & 360 Marketing Studio USA",
                 "AMS Crafters is a full-service creative agency for web design, app development, software, branding, SEO, and 360 marketing. 50+ happy clients, 120+ projects delivered.",
-                body, "Home", "/index.html")
+                body, "Home", "/index.html", "hero")
 
 def project_card(p):
     slug, name, cat, label, desc = p
@@ -465,7 +576,7 @@ def services_page():
             + cta_band("purple"))
     return page("Our Services | Full-Stack Digital, Design & Marketing Solutions USA | AMS Crafters",
                 "Eleven services from AMS Crafters: 360 marketing, website design, app development, software, SEO, branding, graphic design, product photography, CRM, Shopify, and ecommerce.",
-                body, "Services", "/services.html")
+                body, "Services", "/services.html", "purple")
 
 def service_page(slug):
     slug_, name, title, intro, deliverables = SERVICE_BY_SLUG[slug]
@@ -490,7 +601,7 @@ def service_page(slug):
             '<a class="btn btn-ghost" href="/contact.html">Request Proposal</a></div></div>'
             '</div></div></section>'
             % (esc(name), esc(name), esc(intro), checks)
-            + process_section()
+            + process_section(slug)
             + '<section class="section"><div class="container"><div class="section-head reveal">'
             '<span class="eyebrow">Keep Exploring</span><h2>Related services</h2></div>'
             '<div class="grid grid-4">%s</div></div></section>' % related
@@ -517,7 +628,7 @@ def portfolio_page():
     body += cta_band("purple")
     return page("Case Studies & Work Portfolio | Top US Digital Agency | AMS Crafters",
                 "11 featured case studies from 120+ projects delivered by AMS Crafters, across business, ecommerce, and marketing.",
-                body, "Portfolio", "/portfolio.html")
+                body, "Portfolio", "/portfolio.html", "purple")
 
 def case_study_page(p):
     slug, name, cat, label, desc = p
@@ -578,7 +689,7 @@ def packages_page():
             '<p class="lead reveal">38 packages across 8 categories. No hidden fees and no fake discounts. '
             'Pick a package or book a free call for a custom quote.</p></div>'
             '<div class="statue-wrap tint-purple reveal"><img class="statue-img" src="/assets/img/statue-purple.png" '
-            'alt="Classical Greek statue with sunglasses holding cash" data-statue="purple" loading="lazy"></div>'
+            'alt="Classical Greek statue with sunglasses holding cash" data-statue="purple"></div>'
             '</div></div></section>'
             '<section class="section-tight"><div class="container">'
             '<div class="tabs reveal" role="tablist">%s</div>%s'
@@ -588,7 +699,7 @@ def packages_page():
             + cta_band("red"))
     return page("Transparent Pricing & Digital Service Packages USA | AMS Crafters",
                 "38 transparent packages from AMS Crafters: web design from $249, logo from $59, ecommerce from $999, SEO from $449 per month. No hidden fees.",
-                body, "Packages", "/packages.html")
+                body, "Packages", "/packages.html", "purple")
 
 def story_page():
     body = ('<section class="page-hero"><div class="container"><div class="breadcrumb">'
@@ -620,7 +731,7 @@ def story_page():
             + process_section() + cta_band("green"))
     return page("Our Story & Vision | Premier US Digital Agency | AMS Crafters",
                 "Founded in 2020, AMS Crafters builds digital experiences that turn brands into category leaders through precision, creativity, and measurable performance.",
-                body, "Story", "/story.html")
+                body, "Story", "/story.html", "green")
 
 def team_page():
     cards = "".join(
@@ -647,7 +758,7 @@ def team_page():
             + cta_band("green"))
     return page("Meet Our Team | Designers, Engineers & Strategists USA | AMS Crafters",
                 "Meet the seven people behind AMS Crafters: founders, engineers, designers, and analysts across design, engineering, research, and growth.",
-                body, "Our Team", "/team.html")
+                body, "Our Team", "/team.html", "green")
 
 def careers_page():
     body = ('<section class="page-hero"><div class="container"><div class="breadcrumb">'
@@ -674,7 +785,7 @@ def careers_page():
             '</div></div></section>' + cta_band("purple"))
     return page("Careers & Opportunities | Join AMS Crafters Digital Team USA",
                 "One open role at AMS Crafters: Senior Sales Executive, Full-Time, North Karachi. Apply by email.",
-                body, "Careers", "/careers.html")
+                body, "Careers", "/careers.html", "purple")
 
 def service_options(selected=""):
     opts = ['<option value="" disabled%s>Select a service</option>' % (" selected" if not selected else "")]
@@ -699,7 +810,10 @@ def contact_page():
             '<div class="contact-card"><div class="card-icon">⌖</div><div><h3>New York office</h3>'
             '<p>500 7th Ave, 8th Floor, New York, NY 10018, USA</p></div></div>'
             '<div class="contact-card"><div class="card-icon">◷</div><div><h3>Office hours</h3>'
-            '<p>Monday to Friday, 9am to 6pm EST</p></div></div></div>'
+            '<p>Monday to Friday, 9am to 6pm EST</p></div></div>'
+            '<div class="contact-card"><div class="card-icon">✓</div><div><h3>What happens next</h3>'
+            '<p>1. We reply within 24 hours on business days.<br>2. Free consultation call to map your scope.<br>'
+            '3. A clear quote before any work begins.</p></div></div></div>'
             '<div class="form-card reveal reveal-delay-1">'
             '<!-- Forms are a front-end demo in this concept redesign and need a backend or form endpoint before launch. -->'
             '<h2 style="font-size:28px;margin-bottom:8px">Send us a message</h2>'
@@ -712,7 +826,7 @@ def contact_page():
             '<input id="c-email" name="email" type="email" required placeholder="you@company.com">'
             '<span class="field-error">Please enter a valid email address.</span></div>'
             '<div class="field"><label for="c-phone">Phone <span>*</span></label>'
-            '<input id="c-phone" name="phone" type="tel" required placeholder="+1 555 123 4567">'
+            '<input id="c-phone" name="phone" type="tel" required placeholder="Your phone number">'
             '<span class="field-error">Please enter your phone number.</span></div>'
             '<div class="field"><label for="c-service">Service <span>*</span></label>'
             '<select id="c-service" name="service" required>%s</select>'
@@ -756,22 +870,20 @@ def consultation_page():
             '<input id="k-email" name="email" type="email" required placeholder="you@company.com">'
             '<span class="field-error">Please enter a valid email address.</span></div>'
             '<div class="field"><label for="k-phone">Phone <span>*</span></label>'
-            '<input id="k-phone" name="phone" type="tel" required placeholder="+1 555 123 4567">'
+            '<input id="k-phone" name="phone" type="tel" required placeholder="Your phone number">'
             '<span class="field-error">Please enter your phone number.</span></div>'
             '<div class="field"><label for="k-service">Service Required <span>*</span></label>'
-            '<select id="k-service" name="service" required>'
-            '<option value="" disabled selected>Select a service</option>'
-            '<option>Branding</option><option>UI/UX Design</option><option>Web Development</option>'
-            '<option>App Development</option><option>Digital Marketing</option><option>Other</option></select>'
+            '<select id="k-service" name="service" required>%s</select>'
             '<span class="field-error">Please choose a service.</span></div>'
-            '<div class="field"><label for="k-date">Preferred Meeting Date</label>'
-            '<input id="k-date" name="date" type="date"></div>'
+            '<div class="field"><label for="k-date">Preferred Meeting Date <span>*</span></label>'
+            '<input id="k-date" name="date" type="date" required>'
+            '<span class="field-error">Please pick a date for your call.</span></div>'
             '<div class="field"><label for="k-time">Preferred Meeting Time</label>'
             '<input id="k-time" name="time" type="time"></div>'
             '<div class="field full"><label for="k-goals">What do you want to achieve? <span>*</span></label>'
             '<textarea id="k-goals" name="goals" required placeholder="Tell us about your project, goals, and budget."></textarea>'
             '<span class="field-error">Please tell us about your goals.</span></div>'
-            '</div><button class="btn btn-primary" type="submit" style="margin-top:24px;width:100%%">Send Message</button>'
+            '</div><button class="btn btn-primary" type="submit" style="margin-top:24px;width:100%%">Book Consultation</button>'
             '<div class="form-success">Thank you. Your consultation request has been received. We will reply within 24 hours to confirm your call.</div>'
             '</form>'
             '<p style="color:var(--faint);font-size:13.5px;margin-top:18px">By submitting this form, you consent to receiving '
@@ -786,10 +898,10 @@ def consultation_page():
             '500 7th Ave, 8th Floor, New York, NY 10018, USA</p></div></div>'
             '<div class="contact-card"><div class="card-icon">◷</div><div><h3>Hours</h3>'
             '<p>Monday to Friday, 9am to 6pm EST</p></div></div></div>'
-            '</div></div></section>')
+            '</div></div></section>' % service_options())
     return page("Book a Free Digital Strategy Consultation USA | AMS Crafters",
                 "Book a free digital strategy consultation with AMS Crafters. Tell us your goals and we will schedule a free call within 24 hours.",
-                body, "Contact", "/consultation.html")
+                body, "Consultation", "/consultation.html")
 
 def legal_page(kind):
     if kind == "privacy":
@@ -845,7 +957,7 @@ def error_page():
             '</div></section>')
     return page("Page Not Found | AMS Crafters",
                 "The page you are looking for does not exist. Return to the AMS Crafters homepage.",
-                body, "", "/404.html")
+                body, "", "/404.html", "red")
 
 def sitemap_xml(pages):
     urls = "".join(
@@ -861,7 +973,7 @@ def vercel_json():
     return '{\n  "cleanUrls": true,\n  "trailingSlash": false\n}\n'
 
 def readme_md():
-    return """# AMS Crafters — Concept Redesign (Demo)
+    return """# AMS Crafters - Concept Redesign (Demo)
 
 A complete static redesign of https://www.amscrafters.com/, built as a front-end
 demo to show what the site could be. Dark premium theme, classical Greek statue
@@ -890,10 +1002,10 @@ artwork, scroll animations, and every verified audit flaw fixed.
 - `packages.html`, `story.html`, `team.html`, `careers.html`
 - `contact.html`, `consultation.html`, `privacy.html`, `terms.html`, `404.html`
 - `assets/css/style.css`, `assets/js/main.js`, `assets/fonts/*.woff2` (local)
-- `assets/img/statue-hero.png` (blue-tinted statue, sunglasses, tablet — hero),
-  `statue-purple.png` (purple statue, sunglasses, cash — results/pricing),
-  `statue-red.png` (red sunglasses, phone — contact/CTA and 404),
-  `statue-green.png` (statue thinking at a laptop, green rim light — story/about).
+- `assets/img/statue-hero.png` (blue-tinted statue, sunglasses, tablet, hero),
+  `statue-purple.png` (purple statue, sunglasses, cash, results/pricing),
+  `statue-red.png` (red sunglasses, phone, contact/CTA and 404),
+  `statue-green.png` (statue thinking at a laptop, green rim light, story/about).
   These are new AI-generated images supplied separately; the HTML keeps the
   `<img>` references and a gradient placeholder shows if a file is missing.
   Statue images fade out at the bottom edge (CSS mask-image) with a soft glow
@@ -915,7 +1027,7 @@ vercel --prod
 ```
 
 Then update the domain in `sitemap.xml` and `robots.txt` if it differs from
-`ams-crafters-redesign.vercel.app`.
+`ams-crafters-redesign-vercel.vercel.app`.
 
 ## Notes
 
@@ -924,7 +1036,7 @@ Then update the domain in `sitemap.xml` and `robots.txt` if it differs from
 - Package feature lists are placeholder copy for the agency to confirm.
 - Testimonials use the verified quotes and names from the audit.
 - Concept redesign crafted by Faizan Khan, Web Developer and AI Automation
-  Specialist — https://faizankhan.pages.dev/
+  Specialist, https://faizankhan.pages.dev/
 """
 
 # ---------------------------------------------------------------- build
