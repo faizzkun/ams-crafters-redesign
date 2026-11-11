@@ -43,6 +43,11 @@
       });
     }, { threshold: 0.12 });
     revealEls.forEach(function (el) { revealObserver.observe(el); });
+    /* Above-the-fold content must be visible at once, not after a transition delay */
+    revealEls.forEach(function (el) {
+      var r = el.getBoundingClientRect();
+      if (r.top < window.innerHeight && r.bottom > 0) el.classList.add('visible');
+    });
   } else {
     revealEls.forEach(function (el) { el.classList.add('visible'); });
   }
@@ -71,7 +76,7 @@
           counterObserver.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.5 });
+    }, { threshold: 0.25 });
     counters.forEach(function (el) { counterObserver.observe(el); });
   } else {
     counters.forEach(function (el) {
@@ -103,12 +108,13 @@
     var dotsWrap = slider.querySelector('.slider-dots');
     var current = 0;
     var timer = null;
+    var pausedUntil = 0;
     slides.forEach(function (_, i) {
       var dot = document.createElement('button');
       dot.type = 'button';
       dot.setAttribute('aria-label', 'Show testimonial ' + (i + 1));
       if (i === 0) dot.classList.add('active');
-      dot.addEventListener('click', function () { goTo(i); restart(); });
+      dot.addEventListener('click', function () { pausedUntil = Date.now() + 8000; goTo(i); restart(); });
       dotsWrap.appendChild(dot);
     });
     var dots = Array.prototype.slice.call(dotsWrap.querySelectorAll('button'));
@@ -121,12 +127,15 @@
     }
     function restart() {
       if (timer) clearInterval(timer);
-      timer = setInterval(function () { goTo(current + 1); }, 6000);
+      timer = setInterval(function () {
+        if (Date.now() < pausedUntil) return;
+        goTo(current + 1);
+      }, 6000);
     }
     var prev = slider.querySelector('.slider-prev');
     var next = slider.querySelector('.slider-next');
-    if (prev) prev.addEventListener('click', function () { goTo(current - 1); restart(); });
-    if (next) next.addEventListener('click', function () { goTo(current + 1); restart(); });
+    if (prev) prev.addEventListener('click', function () { pausedUntil = Date.now() + 8000; goTo(current - 1); restart(); });
+    if (next) next.addEventListener('click', function () { pausedUntil = Date.now() + 8000; goTo(current + 1); restart(); });
     slider.addEventListener('mouseenter', function () { if (timer) clearInterval(timer); });
     slider.addEventListener('mouseleave', restart);
     restart();
@@ -191,8 +200,10 @@
         if (success) success.classList.add('show');
         form.reset();
         if (success) success.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      } else if (success) {
-        success.classList.remove('show');
+      } else {
+        if (success) success.classList.remove('show');
+        var firstBad = form.querySelector('.field.invalid input, .field.invalid select, .field.invalid textarea');
+        if (firstBad) firstBad.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     });
   });
